@@ -1,0 +1,222 @@
+\q
+CREATE ROLE vagrant LOGIN SUPERUSER PASSWORD '123';
+CREATE ROLE labber LOGIN SUPERUSER PASSWORD 'labber';
+CREATE ROLE labber LOGIN SUPERUSER PASSWORD 'labber';
+CREATE ROLE vagrant LOGIN SUPERUSER PASSWORD '123';
+\q
+CREATE DATABASE test_db;
+\c test_db 
+CREATE TABLE famous_people (
+  id SERIAL PRIMARY KEY,
+  first_name VARCHAR(50),
+  last_name VARCHAR(50),
+  birthdate DATE
+);
+INSERT INTO famous_people (first_name, last_name, birthdate) VALUES ('Olivia','Rodrigo', '2003-02-20')
+INSERT INTO famous_people (first_name, last_name, birthdate) VALUES ('Olivia','Rodrigo', '2003-02-20');
+INSERT INTO famous_people (first_name, last_name, birthdate)
+  VALUES ('Abraham', 'Lincoln', '1809-02-12');
+INSERT INTO famous_people (first_name, last_name, birthdate)
+  VALUES ('Mahatma', 'Gandhi', '1869-10-02');
+INSERT INTO famous_people (first_name, last_name, birthdate)
+  VALUES ('Paul', 'Rudd', '1969-04-06');
+INSERT INTO famous_people (first_name, last_name, birthdate)
+  VALUES ('Paul', 'Giamatti', '1967-06-06');
+select * from famous_people; 
+INSERT INTO famous_people (first_name, last_name, birthdate) VALUES ('Olivia','Rodrigo', '2003-02-20');
+select * from famous_people
+select * from famous_people; 
+select * from famous_people; 
+INSERT INTO famous_people (first_name, last_name, birthdate) VALUES ('Olivia','Rodrigo', '2003-02-20');
+select * from famous_people; 
+select first_name, last_name from famous_people where birthdate >'1920-01-01';
+select first_name, last_name from famous_people where birthdate <'1920-01-01';
+select first_name, last_name from famous_people where first_name = 'Paul';
+select count(*) from famous_people; 
+\q
+\q
+CREATE DATABASE bootcampx;
+\c bootcampx; 
+\q
+\c bootcampx 
+\i migrations/student_cohorts.sql 
+\dt 
+select * from students; 
+select * from cohorts; 
+clear
+\q
+\i seeds/cohorts.sql
+\c bootcampx 
+\i seeds/cohorts.sql
+\i seeds/students.sql
+select count(*)from students;  
+\q
+\c bootcampx 
+SELECT id, name, email, cohort_id
+from students
+where github = NULL; 
+\dt 
+SELECT id, name, email, cohort_id
+from students; 
+\i 0_selects/1_students_without_github.sql
+\q
+\c bootcampx 
+\i migrations/assignments_submissions.sql
+\d
+\q
+\c bootcampx 
+\i seeds/assignments_seeds.sql
+\i seeds/assignment_submissions_seeds.sql
+\dt 
+\i seeds/assignment_submissions_seeds.sql
+\q
+\c bootcampx 
+\i seeds/assignment_submissions_seeds.sql
+\i seeds/assignment_submissions_seeds.sql
+\dt
+\dt+ 
+\dt 
+select (*) from assignments; 
+select count (*) from assignments; 
+\dt
+\i seeds/assignment_submissions_seeds.sql
+SELECT count(*) FROM assignment_submissions;
+SELECT count(*) FROM assignments_submissions;
+\q 
+\c bootcampx 
+SELECT teachers.name as teacher, students.name as students, assignments.name
+as assignment, (assistance_requests.completed_at - assistance_requests.started_at) as duration
+FROM assistance_requests
+  JOIN teachers ON teachers.id = teacher_id
+  JOIN students ON students.id = student_id
+  JOIN assignments ON assignments.id = assignment_id
+ORDER BY duration; 
+\d assistance_requests
+SELECT avg(completed_at - started_at ) as average_assistance_request_duration
+FROM assistance_requests; 
+\d cohorts
+\d students
+SELECT cohorts.name as name, avg(completed_at - started_at ) as average_assistance_request_duration
+FROM assistance_requests
+  JOIN students ON students.id = student_id
+  JOIN cohorts ON cohorts.id = cohort_id
+GROUP BY name
+ORDER BY average_assistance_request_duration; 
+SELECT cohorts.name as name, avg(completed_at - started_at ) as average_assistance_request_duration
+FROM assistance_requests
+  JOIN students ON students.id = student_id
+  JOIN cohorts ON cohorts.id = cohort_id
+GROUP BY cohorts.name
+ORDER BY average_assistance_request_duration; 
+SELECT cohorts.name, max(avg(completed_at - started_at )) as average_assistance_request_duration
+FROM assistance_requests
+  JOIN students ON students.id = student_id
+  JOIN cohorts ON cohorts.id = cohort_id
+GROUP BY cohorts.name
+ORDER BY average_assistance_request_duration; 
+SELECT cohorts.name, avg(completed_at - started_at ) as average_assistance_request_duration
+FROM assistance_requests
+  JOIN students ON students.id = student_id
+  JOIN cohorts ON cohorts.id = cohort_id
+GROUP BY cohorts.name
+ORDER BY average_assistance_request_duration DESC
+LIMIT 1; 
+\d assistance_requests
+SELECT avg(created_at - started_at) as average_wait_time
+FROM assistance_requests; 
+SELECT avg(started_at - created_at) as average_wait_time
+FROM assistance_requests; 
+SELECT cohorts.name as cohort, sum(completed_at - started_at) as total_duration
+FROM assistance_requests
+  JOIN students ON students.id = student_id
+  JOIN cohorts ON cohorts.id = cohort_id
+GROUP BY cohort
+ORDER BY total_duration; 
+SELECT avg(x.total_duration) as average_total_duration
+from (SELECT sum(completed_at - started_at) as total_duration
+  FROM assistance_requests
+    JOIN students ON students.id = student_id
+    JOIN cohorts ON cohorts.id = cohort_id
+  GROUP BY cohort
+  ORDER BY total_duration) as x;  
+SELECT avg(x.total_duration) as average_total_duration
+from (SELECT sum(completed_at - started_at) as total_duration
+  FROM assistance_requests
+    JOIN students ON students.id = student_id
+    JOIN cohorts ON cohorts.id = cohort_id
+  ORDER BY total_duration) as x;  
+SELECT avg(x.total_duration) as average_total_duration
+from (SELECT cohorts.name as cohort, sum(completed_at - started_at) as total_duration
+  FROM assistance_requests
+    JOIN students ON students.id = student_id
+    JOIN cohorts ON cohorts.id = cohort_id
+  GROUP BY cohort
+  ORDER BY total_duration) as x ;  
+SELECT avg(total_duration) as average_total_duration
+from (SELECT cohorts.name as cohort, sum(completed_at - started_at) as total_duration
+  FROM assistance_requests
+    JOIN students ON students.id = student_id
+    JOIN cohorts ON cohorts.id = cohort_id
+  GROUP BY cohort
+  ORDER BY total_duration) as total_duration ;  
+\d assistance_requests
+\d assignments
+\d assistance_requests
+SELECT assignments.id as id, assignments.name as name, assignements.chapter as chapter, count(assistance_requests.id) as total_requests
+FROM assignements
+  JOIN assistance_requests ON assignment_id = assignments.id
+ORDER BY total_requests; 
+SELECT assignments.id as id, assignments.name as name, assignements.chapter as chapter, count(assistance_requests.id) as total_requests
+FROM assignments
+  JOIN assistance_requests ON assignment_id = assignments.id
+ORDER BY total_requests; 
+LECT assignments.id as id, assignments.name as name, assignments.chapter as chapter, count(assistance_requests.id) as total_requests
+FROM assignments
+  JOIN assistance_requests ON assignment_id = assignments.id
+ORDER BY total_requests; 
+SELECT assignments.id as id, assignments.name as name, assignments.chapter as chapter, count(assistance_requests.id) as total_requests
+FROM assignments
+  JOIN assistance_requests ON assignment_id = assignments.id
+ORDER BY total_requests; 
+SELECT assignments.id as id, assignments.name as name, assignments.chapter as chapter, count(assistance_requests.id) as total_requests
+FROM assignments
+  JOIN assistance_requests ON assignment_id = assignments.id
+GROUP BY id, name, chapter
+ORDER BY total_requests; 
+SELECT assignments.id as id, assignments.name as name, assignments.chapter as chapter, count(assistance_requests.id) as total_requests
+FROM assignments
+  JOIN assistance_requests ON assignment_id = assignments.id
+GROUP BY assignments.id, assignments.name, chapter
+ORDER BY total_requests; 
+SELECT assignments.id as id, assignments.name as name, assignments.chapter as chapter, count(assistance_requests.id) as total_requests
+FROM assignments
+  JOIN assistance_requests ON assignment_id = assignments.id
+GROUP BY assignments.id, assignments.name, chapter
+ORDER BY total_requests DESC; 
+\d assignemnts
+\d assignements
+\d assignments
+SELECT day, count(id) as number_of_assignments, sum(duration) as duration
+FROM assignments
+GROUP BY day
+ORDER by day; 
+\d assistance_requests
+\d teachers
+\d cohorts
+\d students
+SELECT teachers.name as teacher, cohorts.name as cohort
+FROM assistance_requests
+  JOIN teachers ON teachers.id = teacher_id
+  JOIN students ON students.id = student_id
+  JOIN cohorts ON cohorts.id = students.cohort_id
+WHERE cohorts.name = 'JUL02'
+ORDER BY teacher; 
+SELECT DISTINCT teachers.name as teacher, cohorts.name as cohort
+FROM assistance_requests
+  JOIN teachers ON teachers.id = teacher_id
+  JOIN students ON students.id = student_id
+  JOIN cohorts ON cohorts.id = students.cohort_id
+WHERE cohorts.name = 'JUL02'
+ORDER BY teacher; 
+\a assistance_requests
+\s assistance_requests
