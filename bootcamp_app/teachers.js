@@ -1,5 +1,5 @@
 const { Pool } = require('pg');
-
+const cohortName = [process.argv[2] || 'JUL02'];
 
 const pool = new Pool({
   user: 'vagrant',
@@ -10,15 +10,20 @@ const pool = new Pool({
 
 pool.connect();
 
-pool.query(`
+
+const values = [`${cohortName}`];
+
+const queryString = `
 SELECT DISTINCT teachers.name as teacher, cohorts.name as cohort
 FROM assistance_requests
   JOIN teachers ON teachers.id = teacher_id
   JOIN students ON students.id = student_id
   JOIN cohorts ON cohorts.id = students.cohort_id
-WHERE cohorts.name = '${process.argv[2] || 'JUL02'}'
+WHERE cohorts.name = $1
 ORDER BY teacher; 
-`)
+`
+
+pool.query(queryString, values)
   .then(res => {
     res.rows.forEach(row => {
       console.log(`${row.cohort}: ${row.teacher}`);
